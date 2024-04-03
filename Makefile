@@ -1,6 +1,6 @@
 
-IMAGE_NAME = your-project-name
-IMAGE_TAG = latest
+IMAGE_NAME = Mak_Dock_file
+IMAGE_TAG = Bohdan99I
 
 linux:
 	GOOS=linux GOARCH=amd64 go build -o ./bin/linux/$(IMAGE_NAME)
