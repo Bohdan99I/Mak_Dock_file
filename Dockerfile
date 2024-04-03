@@ -1,7 +1,13 @@
 FROM quay.io/projectquay/golang:1.20
 
-COPY . /app
 WORKDIR /app
-RUN go build -o myapp .
 
-ENTRYPOINT ["/app/myapp"]
+COPY go.mod go.sum ./
+
+RUN go mod download
+
+COPY . .
+
+RUN go build -o ./bin/$(IMAGE_NAME)
+
+CMD ["./bin/$(IMAGE_NAME)"]
