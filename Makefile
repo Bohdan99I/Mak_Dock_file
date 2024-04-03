@@ -1,21 +1,17 @@
-IMAGE_NAME = Mak_Dock_file
-IMAGE_TAG = Bohdan99I
+IMAGE_TAG := Bohdan99I
+DOCKER_REGISTRY := your.registry.com
 
 linux:
-    GOOS=linux GOARCH=amd64 go build -o ./bin/linux/$(IMAGE_NAME)
+	GOOS=linux GOARCH=amd64 go build -o myapp-linux-amd64 .
 
 arm:
-    GOOS=linux GOARCH=arm64 go build -o ./bin/arm/$(IMAGE_NAME)
+	GOOS=linux GOARCH=arm go build -o myapp-linux-arm .
 
 macos:
-    GOOS=darwin GOARCH=amd64 go build -o ./bin/macos/$(IMAGE_NAME)
+	GOOS=darwin GOARCH=amd64 go build -o myapp-macos-amd64 .
 
 windows:
-    GOOS=windows GOARCH=amd64 go build -o ./bin/windows/$(IMAGE_NAME)
+	GOOS=windows GOARCH=amd64 go build -o myapp-windows-amd64.exe .
 
 clean:
-    rm -rf ./bin
-    docker rmi $(IMAGE_NAME):$(IMAGE_TAG)
-
-image:
-    docker build -t $(IMAGE_NAME):$(IMAGE_TAG) .
+	docker rmi $(DOCKER_REGISTRY)/$(IMAGE_TAG)
