@@ -21,3 +21,7 @@ windows:
 # Ціль "clean" для видалення новоствореного образу
 clean:
     docker rmi $(IMAGE_NAME):$(IMAGE_TAG)
+
+# Ціль "image" для збірки Docker-образу
+image:
+    docker build -t $(IMAGE_NAME):$(IMAGE_TAG) .
