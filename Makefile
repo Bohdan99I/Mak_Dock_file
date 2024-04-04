@@ -23,10 +23,7 @@ clean:
     docker rmi $(IMAGE_NAME):$(IMAGE_TAG)
 
 # Ціль "image" для збірки Docker-образу
-image: force
+image: Dockerfile
     docker build -t $(IMAGE_NAME):$(IMAGE_TAG) .
 
-# Форсування цілі "image"
-force: ;
-
-.PHONY: force
+.PHONY: linux arm macos windows clean image
