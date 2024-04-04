@@ -1,8 +1,12 @@
 
-TEMP_DIR ?= /tmp
+IMAGE_NAME ?= Mak_Dock_file
+IMAGE_TAG ?= Bohdan99I
 
-build:
-    docker build -t $(IMAGE_NAME):$(IMAGE_TAG) \
-        --build-arg IMAGE_NAME=$(IMAGE_NAME) \
-        --build-arg IMAGE_TAG=$(IMAGE_TAG) \
-        --build-arg TEMP_DIR=$(TEMP_DIR) .
+
+image:
+    docker build -t $(IMAGE_NAME):$(IMAGE_TAG) .
+
+
+clean:
+    rm -f ./bin/$(IMAGE_NAME)
+    docker rmi $(IMAGE_NAME):$(IMAGE_TAG)
