@@ -1,14 +1,29 @@
+
+IMAGE_NAME ?= my_image
+IMAGE_TAG ?= latest
+
+
 linux:
-    GOOS=linux GOARCH=amd64 go build -o myapp-linux-amd64 .
+    GOOS=linux GOARCH=amd64 go build -o ./bin/linux/$(IMAGE_NAME)
+
 
 arm:
-    GOOS=linux GOARCH=arm go build -o myapp-linux-arm .
+    GOOS=linux GOARCH=arm64 go build -o ./bin/arm/$(IMAGE_NAME)
+
 
 macos:
-    GOOS=darwin GOARCH=amd64 go build -o myapp-macos-amd64 .
+    GOOS=darwin GOARCH=amd64 go build -o ./bin/macos/$(IMAGE_NAME)
+
 
 windows:
-    GOOS=windows GOARCH=amd64 go build -o myapp-windows-amd64.exe .
+    GOOS=windows GOARCH=amd64 go build -o ./bin/windows/$(IMAGE_NAME)
+
 
 clean:
-    docker rmi <IMAGE_TAG>
+    docker rmi $(IMAGE_NAME):$(IMAGE_TAG)
+
+
+image: Dockerfile
+    docker build -t $(IMAGE_NAME):$(IMAGE_TAG) .
+
+.PHONY: linux arm macos windows clean image
