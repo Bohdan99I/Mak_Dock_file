@@ -1,29 +1,30 @@
-# Задання змінних
-IMAGE_NAME ?= my_image
-IMAGE_TAG ?= latest
+APP := $(shell basename $(shell git remote get-url origin))
+REGISTRY := denvasyliev
+VERSION=$(shell git describe --tags --abbrev=0)-$(shell git rev-parse --short HEAD)
+TARGETOS=linux #linux darwin windows
+TARGETARCH=arm64 #amd64 arm64
 
-# Ціль "linux" для збірки коду для Linux
-linux:
-    GOOS=linux GOARCH=amd64 go build -o ./bin/linux/$(IMAGE_NAME)
+format:
+	gofmt -s -w ./
 
-# Ціль "arm" для збірки коду для arm
-arm:
-    GOOS=linux GOARCH=arm64 go build -o ./bin/arm/$(IMAGE_NAME)
+lint:
+	golint
 
-# Ціль "macos" для збірки коду для macOS
-macos:
-    GOOS=darwin GOARCH=amd64 go build -o ./bin/macos/$(IMAGE_NAME)
+test:
+	go test -v
 
-# Ціль "windows" для збірки коду для Windows
-windows:
-    GOOS=windows GOARCH=amd64 go build -o ./bin/windows/$(IMAGE_NAME)
+get:
+	go get
 
-# Ціль "clean" для видалення новоствореного образу
+build: format get
+	CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} go build -v -o kbot -ldflags "-X="github.com/den-vasyliev/kbot/cmd.appVersion=${VERSION}
+
+image:
+	docker build . -t ${REGISTRY}/${APP}:${VERSION}-${TARGETARCH}  --build-arg TARGETARCH=${TARGETARCH}
+
+push:
+	docker push ${REGISTRY}/${APP}:${VERSION}-${TARGETARCH}
+
 clean:
-    docker rmi $(IMAGE_NAME):$(IMAGE_TAG)
-
-# Ціль "image" для збірки Docker-образу
-image: Dockerfile
-    docker build -t $(IMAGE_NAME):$(IMAGE_TAG) .
-
-.PHONY: linux arm macos windows clean image
+	rm -rf kbot
+	docker rmi ${REGISTRY}/${APP}:${VERSION}-${TARGETARCH}
