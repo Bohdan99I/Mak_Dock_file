@@ -1,19 +1,20 @@
+# Використання базового образу quay.io/projectquay/golang:1.20
+FROM quay.io/projectquay/golang:1.20
 
-ARG TEMP_DIR=/tmp
-
-FROM quay.io/projectquay/golang:1.20 AS builder
-
+# Робочий каталог /app
 WORKDIR /app
 
+# Копіювання файлів go.mod та go.sum
 COPY go.mod go.sum ./
 
-RUN GOCACHE=${TEMP_DIR}/gocache go mod download
+# Завантаження модулів Go
+RUN go mod download
 
+# Копіювання усіх файлів
 COPY . .
-RUN go build -o ./bin/${IMAGE_NAME}
 
-FROM scratch
+# Збірка бінарного файлу
+RUN go build -o ./bin/$(IMAGE_NAME)
 
-COPY --from=builder /app/bin/${IMAGE_NAME} /app/${IMAGE_NAME}
-
-CMD ["/app/${IMAGE_NAME}"]
+# Встановлення команди за умовчанням
+CMD ["./bin/$(IMAGE_NAME)"]
