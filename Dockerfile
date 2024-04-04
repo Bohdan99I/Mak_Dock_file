@@ -1,12 +1,13 @@
-ARG IMAGE_NAME
-ARG IMAGE_TAG
+
+ARG TEMP_DIR=/tmp
 
 FROM quay.io/projectquay/golang:1.20 AS builder
 
 WORKDIR /app
 
 COPY go.mod go.sum ./
-RUN go mod download
+
+RUN GOCACHE=${TEMP_DIR}/gocache go mod download
 
 COPY . .
 RUN go build -o ./bin/${IMAGE_NAME}
