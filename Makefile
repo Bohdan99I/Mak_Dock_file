@@ -1,29 +1,30 @@
+APP := $(shell basename $(shell git remote get-url origin))
+REGISTRY := bohdan99I
+VERSION=$(shell git describe --tags --abbrev=0)-$(shell git rev-parse --short HEAD)
+TARGETOS=linux 
+TARGETARCH=arm64 
 
-IMAGE_NAME ?= my_image
-IMAGE_TAG ?= latest
+format:
+	gofmt -s -w ./
 
+lint:
+	golint
 
-linux:
-    GOOS=linux GOARCH=amd64 go build -o ./bin/linux/$(IMAGE_NAME)
+test:
+	go test -v
 
+get:
+	go get
 
-arm:
-    GOOS=linux GOARCH=arm64 go build -o ./bin/arm/$(IMAGE_NAME)
+build: format get
+	CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} go build -v -o Mak_Dock_file -ldflags "-X="github.com/Bohdan99I/Mak_Dock_file/cmd.appVersion=${VERSION}
 
+image:
+	docker build . -t ${REGISTRY}/${APP}:${VERSION}-${TARGETARCH} 
 
-macos:
-    GOOS=darwin GOARCH=amd64 go build -o ./bin/macos/$(IMAGE_NAME)
-
-
-windows:
-    GOOS=windows GOARCH=amd64 go build -o ./bin/windows/$(IMAGE_NAME)
-
+push:
+	docker push ${REGISTRY}/${APP}:${VERSION}-${TARGETARCH}
 
 clean:
-    docker rmi $(IMAGE_NAME):$(IMAGE_TAG)
-
-
-image: Dockerfile
-    docker build -t $(IMAGE_NAME):$(IMAGE_TAG) .
-
-.PHONY: linux arm macos windows clean image
+	rm -rf Mak_Dock_file
+	docker rmi ${REGISTRY}/${APP}:${VERSION}-${TARGETARCH}

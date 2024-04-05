@@ -1,20 +1,13 @@
 
 FROM quay.io/projectquay/golang:1.20
 
-
-WORKDIR /app
-
-
-COPY go.mod go.sum ./
-
-
-RUN go mod download
-
-
+WORKDIR /go/src/app
 COPY . .
 
+RUN make build 
 
-RUN go build -o ./bin/$(IMAGE_NAME)
-
-
-CMD ["./bin/$(IMAGE_NAME)"]
+FROM scratch
+WORKDIR /
+COPY --from=builder /go/src/app/Mak_Dock_file .
+COPY --from=alpine:latest /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
+ENTRYPOINT ["./kbot"]
